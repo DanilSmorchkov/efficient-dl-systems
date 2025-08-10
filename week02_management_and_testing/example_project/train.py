@@ -9,7 +9,7 @@ from tqdm import tqdm, trange
 from hparams import config
 
 def compute_accuracy(preds, targets):
-    result = (targets == preds).float().sum()
+    result = (targets == preds).float().mean()
     return result
 
 
@@ -41,7 +41,7 @@ def main():
     test_loader = torch.utils.data.DataLoader(dataset=test_dataset,
                                               batch_size=config["batch_size"])
 
-    device = torch.device("cuda")
+    device = torch.device("mps")
 
     model = resnet18(pretrained=False, num_classes=10, zero_init_residual=config["zero_init_residual"])
     model.to(device)
