@@ -1,0 +1,13 @@
+model:
+  hidden_size: 128
+  betas:
+  - 0.0001
+  - 0.02
+  num_timesteps: 1000
+train:
+  num_epochs: 150
+  batch_size: 128
+  lr: 0.0003
+  device: mps
+wandb:
+  project: diffusion-cifar10

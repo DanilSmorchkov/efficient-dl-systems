@@ -1,0 +1,53 @@
+_wandb:
+    value:
+        cli_version: 0.19.4
+        m: []
+        python_version: 3.11.9
+        t:
+            "1":
+                - 1
+                - 41
+                - 50
+                - 55
+                - 105
+            "2":
+                - 1
+                - 41
+                - 50
+                - 55
+                - 105
+            "3":
+                - 1
+                - 2
+                - 13
+                - 16
+                - 23
+                - 55
+            "4": 3.11.9
+            "5": 0.19.4
+            "8":
+                - 5
+            "12": 0.19.4
+            "13": darwin-arm64
+model:
+    value:
+        betas:
+            - 0.0001
+            - 0.02
+        hidden_size: 128
+        num_timesteps: 1000
+train:
+    value:
+        batch_size: 128
+        device: mps
+        lr: 0.0003
+        num_dataloader_workers: 4
+        num_epochs: 150
+        optimizer:
+            _mode_: partial
+            _target_: torch.optim.SGD
+wandb:
+    value:
+        api_key: ${oc.env:WANDB_API_KEY}
+        project: diffusion-cifar10
+        run_name: default_run

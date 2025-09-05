@@ -1,0 +1,4 @@
+defaults:
+  - model: default_model
+  - train: default_train
+  - wandb: default_wandb

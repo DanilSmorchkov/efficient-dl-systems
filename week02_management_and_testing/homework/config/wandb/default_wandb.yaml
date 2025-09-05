@@ -1,0 +1,3 @@
+project: diffusion-cifar10
+run_name: "default_run"
+api_key: ${oc.env:WANDB_API_KEY}

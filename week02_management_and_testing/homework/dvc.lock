@@ -1,0 +1,48 @@
+schema: '2.0'
+stages:
+  get_data:
+    cmd: python get_data.py
+    deps:
+    - path: get_data.py
+      md5: e90488562a0e120afe2a0fdc10843474
+      size: 391
+    outs:
+    - path: cifar10/
+      md5: e252d2c8ba36d1ab3e21a873ab62daa3.dir
+      size: 356712185
+      nfiles: 9
+  train:
+    cmd: python train.py
+    deps:
+    - path: cifar10/
+      md5: e252d2c8ba36d1ab3e21a873ab62daa3.dir
+      size: 356712185
+      nfiles: 9
+    - path: config/
+      md5: 7e39bdf07b625cfe0221859d97daf559.dir
+      size: 424
+      nfiles: 6
+    - path: modeling/diffusion.py
+      md5: 981c5e5e6fef68dedc2a45cdbb1ac6d5
+      size: 3748
+    - path: modeling/training.py
+      md5: 00df197d9728acdc1918573840359001
+      size: 2858
+    - path: modeling/unet.py
+      md5: 2d1cbe6e07f49ea51b069c602d6ea349
+      size: 3688
+    - path: train.py
+      md5: 0ce4015db0657014be5c5b42dc601e8e
+      size: 3880
+    - path: utils/config_validation.py
+      md5: 7c485ec55e76f3566f9eb35ee496cc37
+      size: 680
+    outs:
+    - path: reconstruction/
+      md5: e76502920b44ca74ae19958f45a37fde.dir
+      size: 8596627
+      nfiles: 450
+    - path: samples/
+      md5: cb9d46d124b94b2c4e55a358dfc6ac3a.dir
+      size: 3931414
+      nfiles: 300

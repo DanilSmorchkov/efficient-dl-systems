@@ -1,0 +1,21 @@
+stages:
+  get_data:
+    cmd: python get_data.py
+    deps:
+      - get_data.py
+    outs:
+      - cifar10/
+
+  train:
+    cmd: python train.py
+    deps:
+      - train.py
+      - modeling/diffusion.py
+      - modeling/unet.py
+      - modeling/training.py
+      - cifar10/
+      - utils/config_validation.py
+      - config/
+    outs:
+      - samples/
+      - reconstruction/
