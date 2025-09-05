@@ -1,0 +1,5 @@
+hidden_size: 128
+betas:
+  - 0.0001
+  - 0.02
+num_timesteps: 1000

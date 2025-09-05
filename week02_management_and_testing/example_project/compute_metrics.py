@@ -24,7 +24,7 @@ def main(args):
     test_loader = torch.utils.data.DataLoader(dataset=test_dataset,
                                               batch_size=config["batch_size"])
 
-    device = torch.device("cuda")
+    device = torch.device("mps")
 
     model = resnet18(pretrained=False, num_classes=10)
     model.load_state_dict(torch.load("model.pt"))

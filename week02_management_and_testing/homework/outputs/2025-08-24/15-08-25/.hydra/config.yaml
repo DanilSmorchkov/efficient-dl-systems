@@ -1,0 +1,16 @@
+model:
+  hidden_size: 128
+  betas:
+  - 0.0001
+  - 0.02
+  num_timesteps: 1000
+train:
+  num_epochs: 150
+  batch_size: 128
+  lr: 0.0003
+  device: cpu
+  num_dataloader_workers: 4
+wandb:
+  project: diffusion-cifar10
+  run_name: default_run
+  api_key: ${oc.env:WANDB_API_KEY}

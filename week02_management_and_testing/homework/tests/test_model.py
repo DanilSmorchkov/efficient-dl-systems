@@ -4,6 +4,8 @@ import torch
 from modeling.diffusion import DiffusionModel
 from modeling.unet import UnetModel
 
+torch.manual_seed(2674)
+
 
 @pytest.mark.parametrize(
     [
@@ -42,7 +44,8 @@ def test_diffusion(num_channels=3, batch_size=4):
     net = UnetModel(num_channels, num_channels, hidden_size=128)
     model = DiffusionModel(eps_model=net, betas=(1e-4, 0.02), num_timesteps=20)
 
-    input_data = torch.randn((batch_size, num_channels, 32, 32))
+    # input_data = torch.randn((batch_size, num_channels, 32, 32))  # -----> image as input is scaled
+    input_data = torch.rand((batch_size, num_channels, 32, 32)) * 2 - 1
 
     output = model(input_data)
     assert output.ndim == 0

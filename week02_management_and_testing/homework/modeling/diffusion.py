@@ -21,26 +21,57 @@ class DiffusionModel(nn.Module):
         self.criterion = nn.MSELoss()
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        timestep = torch.randint(1, self.num_timesteps + 1, (x.shape[0],))
-        eps = torch.rand_like(x)
+        timestep = torch.randint(1, self.num_timesteps + 1, (x.shape[0],), device=x.device)  #  device
+
+        # eps = torch.rand_like(x)   ---------------> wrong distribution
+        eps = torch.randn_like(x, device=x.device)   #  device
 
         x_t = (
             self.sqrt_alphas_cumprod[timestep, None, None, None] * x
-            + self.one_minus_alpha_over_prod[timestep, None, None, None] * eps
+            # + self.one_minus_alpha_over_prod[timestep, None, None, None] * eps   --------> wrong multiplier
+            + self.sqrt_one_minus_alpha_prod[timestep, None, None, None] * eps
         )
 
         return self.criterion(eps, self.eps_model(x_t, timestep / self.num_timesteps))
 
-    def sample(self, num_samples: int, size, device) -> torch.Tensor:
+    def sample(self, num_samples: int, size, device) -> tuple[torch.Tensor, torch.Tensor]:
 
-        x_i = torch.randn(num_samples, *size)
+        x_i = torch.randn(num_samples, *size, device=device)
+        initial_noize = x_i.detach().clone()
 
         for i in range(self.num_timesteps, 0, -1):
-            z = torch.randn(num_samples, *size) if i > 1 else 0
+            z = torch.randn(num_samples, *size, device=device) if i > 1 else torch.tensor(0.0, device=device)
             eps = self.eps_model(x_i, torch.tensor(i / self.num_timesteps).repeat(num_samples, 1).to(device))
             x_i = self.inv_sqrt_alphas[i] * (x_i - eps * self.one_minus_alpha_over_prod[i]) + self.sqrt_betas[i] * z
 
-        return x_i
+        return x_i, initial_noize
+
+    @torch.no_grad()
+    def q_sample(self, x0: torch.Tensor, t: torch.Tensor) -> torch.Tensor:
+        b = x0.shape[0]
+        eps = torch.randn_like(x0)
+        sqrt_ab = self.sqrt_alphas_cumprod[t].view(b, 1, 1, 1)
+        sqrt_1mab = self.sqrt_one_minus_alpha_prod[t].view(b, 1, 1, 1)
+        return sqrt_ab * x0 + sqrt_1mab * eps
+
+    @torch.no_grad()
+    def denoise_from(self, x_t: torch.Tensor, t: torch.Tensor) -> torch.Tensor:
+        device = x_t.device
+        x = x_t.clone()
+        B = x.size(0)
+
+        for i in range(t.item(), 0, -1):
+            # t/T для модели
+            t_scaled = torch.full((B,), i / self.num_timesteps, device=device)
+            eps = self.eps_model(x, t_scaled)
+
+            x = (1 / self.inv_sqrt_alphas[i]) * (
+                    x - self.one_minus_alpha_over_prod[i] * eps
+            )
+            if i > 1:
+                z = torch.randn_like(x)
+                x = x + self.sqrt_betas[i] * z
+        return x
 
 
 def get_schedules(beta1: float, beta2: float, num_timesteps: int) -> Dict[str, torch.Tensor]:
